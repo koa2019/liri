@@ -26,7 +26,7 @@ switch (action) {
         break;
     case 'spotify-this-song':
         console.log('call Spotify API ');
-        // song();
+        song();
         break;
     case 'movie-this':
         console.log('call OMBD API ');
@@ -59,15 +59,21 @@ function concert() {
 
 }
 
-function song() {
+function song(artist) {
+    var artist = searchWord;
+    console.log(artist)
 
-    console.log('Artist(s): ' + artist);
+    spotify.search({ type: 'track', query: artist, limit: 2 }, function(err, data) {
+        if (err) {
+            console.log('Error: ' + err);
+        }
 
-    console.log("Song name: " + track);
-
-    console.log('A preview link of the song from Spotify ' + songUrl);
-
-    console.log('Album: ' + album);
+        console.log(data);
+        // console.log('Artist(s): ' + artist);
+        // console.log("Song name: " + track);
+        // console.log('A preview link of the song from Spotify ' + songUrl);
+        // console.log('Album: ' + album);
+    });
 }
 
 //use axios & trilogy api key
