@@ -1,44 +1,54 @@
-//add code to read and set any environment variables w/dotenv package
+// read and set any environment variables w/dotenv package
 //import dotenv package
+//.config() reads .env file, parse the contents, assign it to process.env, 
+//and return an Object with a parsed key containing the loaded content 
+//or an error key if it failed.
 var dotenv = require("dotenv").config();
-
-//readFile
-dotenv.readFile();
 
 //import the keys.js file
 var keys = require("./keys.js");
 
-//readFile
-keys.readFile();
+//import node package
+var Spotify = require('node-spotify-api');
 
-// access your keys information
+// access keys.js data
 var spotify = new Spotify(keys.spotify);
 
 //declare variable & set value to the 3rd arguement passed in cmd line
 var action = process.argv[2];
+var searchWord = process.argv[3];
 
 //Make it so liri.js can take in one of the following commands:
 switch (action) {
     case 'concert-this':
         console.log('call Bands in Town Artist Events API ');
-        concert();
+        // concert();
         break;
     case 'spotify-this-song':
         console.log('call Spotify API ');
-        song();
+        // song();
         break;
     case 'movie-this':
         console.log('call OMBD API ');
-        movie();
+        // movie();
         break;
     case 'do-what-it-says':
         console.log('call ');
-        doWhatItSays();
+        // doWhatItSays();
         break;
 
 }
 //"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"
 function concert() {
+
+    //import bandsintown API
+    var bandsintown = require('bandsintown')(APP_ID);
+
+    bandsintown
+        .getArtist('Skrillex')
+        .then(function(events) {
+            // return array of events
+        });
 
     console.log('Name of the venue ' + venue);
 
