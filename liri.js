@@ -67,17 +67,17 @@ function song() {
         }
 
 
-        var artist = data.tracks.items[0].artists[0].name;
-        console.log('Artist(s): ' + artist);
-        var album = data.tracks.items[0].album.name;
-        console.log('Album: ' + album);
+        // var artist = data.tracks.items[0].artists[0].name;
+        // console.log('Artist(s): ' + artist);
+        // var album = data.tracks.items[0].album.name;
+        // console.log('Album: ' + album);
 
         // console.log(data);
-        // console.log(data.tracks.items[11]);
+        // console.log(data.tracks.items[0].external_urls.spotify);
         // var track = 
         // console.log("Song name: " + track);
-        var songUrl = " ";
-        // console.log('A preview link of the song from Spotify ' + songUrl);
+        var songUrl = data.tracks.items[0].external_urls.spotify;
+        console.log('A preview link of the song from Spotify ' + songUrl);
 
     });
 }
