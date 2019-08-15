@@ -25,7 +25,7 @@ switch (action) {
         // concert();
         break;
     case 'spotify-this-song':
-        console.log('call Spotify API ');
+        // console.log('call Spotify API ');
         song();
         break;
     case 'movie-this':
@@ -59,20 +59,26 @@ function concert() {
 
 }
 
-function song(artist) {
-    var artist = searchWord;
-    console.log(artist)
+function song() {
 
-    spotify.search({ type: 'track', query: artist, limit: 2 }, function(err, data) {
+    spotify.search({ type: 'track', query: searchWord, limit: 1 }, function(err, data) {
         if (err) {
             console.log('Error: ' + err);
         }
 
-        console.log(data);
-        // console.log('Artist(s): ' + artist);
+
+        var artist = data.tracks.items[0].artists[0].name;
+        console.log('Artist(s): ' + artist);
+        var album = data.tracks.items[0].album.name;
+        console.log('Album: ' + album);
+
+        // console.log(data);
+        // console.log(data.tracks.items[11]);
+        // var track = 
         // console.log("Song name: " + track);
+        var songUrl = " ";
         // console.log('A preview link of the song from Spotify ' + songUrl);
-        // console.log('Album: ' + album);
+
     });
 }
 
