@@ -14,6 +14,8 @@ var Spotify = require('node-spotify-api');
 // access keys.js data
 var spotify = new Spotify(keys.spotify);
 
+var axios = require('axios');
+
 //declare variable & set value to the 3rd arguement passed in cmd line
 var action = process.argv[2];
 var searchWord = process.argv[3];
@@ -21,42 +23,57 @@ var searchWord = process.argv[3];
 //Make it so liri.js can take in one of the following commands:
 switch (action) {
     case 'concert-this':
-        console.log('call Bands in Town Artist Events API ');
-        // concert();
+        console.log('call Bands in Town Artist Events API');
+        concert();
         break;
     case 'spotify-this-song':
         // console.log('call Spotify API ');
         song();
         break;
     case 'movie-this':
-        console.log('call OMBD API ');
+        console.log('call OMBD API');
         // movie();
         break;
     case 'do-what-it-says':
-        console.log('call ');
+        console.log('call');
         // doWhatItSays();
         break;
 
 }
-//"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"
+//
 function concert() {
 
+    // console.log('bands in town function')
     //import bandsintown API
-    var bandsintown = require('bandsintown')(APP_ID);
+    // var bandsintown = require('bandsintown')(APP_ID);
 
-    bandsintown
-        .getArtist('Skrillex')
-        .then(function(events) {
-            // return array of events
+    // bandsintown
+    //     .getArtist('Skrillex')
+    //     .then(function(events) {
+    //         // return array of events
+    //     });
+    var artist = searchWord;
+
+    var url = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
+
+    axios.get(url).then(
+            function(response) {
+                // console.log(response.data);
+                var venue = response.data[0].venue.name;
+                // console.log('Name of the venue ' + venue);
+                var location = "";
+                console.log(response.data[0].venue.city + ', ' + response.data[0].venue.region);
+                // console.log('Venue location: ' + location);
+
+                //use moment to format this as "MM/DD/YYYY"
+                // console.log(response.data[0].datetime);
+
+                var date = response.data[0].datetime;
+                console.log('Date of the Event: ' + date);
+            })
+        .catch(function(err) {
+            console.log('error')
         });
-
-    console.log('Name of the venue ' + venue);
-
-    console.log('Venue location: ' + location);
-
-    //use moment to format this as "MM/DD/YYYY"
-    console.log('Date of the Event: ' + date);
-
 }
 
 function song() {
@@ -65,7 +82,6 @@ function song() {
         if (err) {
             console.log('Error: ' + err);
         }
-
 
         var artist = data.tracks.items[0].artists[0].name;
         // console.log('Artist(s): ' + artist);
