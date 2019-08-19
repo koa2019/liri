@@ -31,8 +31,7 @@ switch (action) {
         song();
         break;
     case 'movie-this':
-        console.log('call OMBD API');
-        // movie();
+        movie();
         break;
     case 'do-what-it-says':
         console.log('call');
@@ -43,15 +42,6 @@ switch (action) {
 //
 function concert() {
 
-    // console.log('bands in town function')
-    //import bandsintown API
-    // var bandsintown = require('bandsintown')(APP_ID);
-
-    // bandsintown
-    //     .getArtist('Skrillex')
-    //     .then(function(events) {
-    //         // return array of events
-    //     });
     var artist = searchWord;
 
     var url = "https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp";
@@ -97,23 +87,56 @@ function song() {
     });
 }
 
-//use axios & trilogy api key
-//function will output message if movieName is empty
+//function uses axios get method to send a request. 
+//if response is successful then movie details will be console logged, else an error message will be shown
 function movie() {
-    if (movieName === "") {
-        console.log('If you havent watched "Mr. Nobody," then you should: http://www.imdb.com/title/tt0485947/. Its on Netflix!');
-        break;
-    }
-    // output:
-    // Title of the movie.
-    // Year the movie came out.
-    // IMDB Rating of the movie.
-    // Rotten Tomatoes Rating of the movie.
-    // Country where the movie was produced.
-    // Language of the movie.
-    // Plot of the movie.
-    // Actors in the movie.
 
+    var movieName = searchWord;
+
+    var url = "http://www.omdbapi.com/?t=" + movieName + "&y=&plot=short&apikey=trilogy";
+
+    // Then run a request with axios to the OMDB API with the movie specified
+    axios.get(url).then(
+            function(response) {
+
+                var title = response.data.Title;
+                var releaseDate = response.data.Released;
+                var rating = response.data.imdbRating;
+                var rottenTomatoes = response.data.Ratings[1].Value;
+                var country = response.data.Country;
+                var language = response.data.Language;
+                var plot = response.data.Plot;
+                var actors = response.data.Actors;
+                console.log(title +
+                    '\nReleased: ' + releaseDate +
+                    "\nIMDB Rating of the movie: " + rating +
+                    '\nRotten Tomatoes Rating: ' + rottenTomatoes +
+                    '\nProduced in: ' + country +
+                    '\nLanguage: ' + language +
+                    '\nPlot: ' + plot +
+                    '\nActors:' + actors +
+                    '\n--------------');
+            })
+        .catch(function(error) {
+            if (error.response) {
+                // The request was made and the server responded with a status code
+                // that falls out of the range of 2xx
+                console.log("---------------Data---------------");
+                console.log(error.response.data);
+                console.log("---------------Status---------------");
+                console.log(error.response.status);
+                console.log("---------------Status---------------");
+                console.log(error.response.headers);
+            } else if (error.request) {
+                // The request was made but no response was received
+                // `error.request` is an object that comes back with details pertaining to the error that occurred.
+                console.log(error.request);
+            } else {
+                // Something happened in setting up the request that triggered an Error
+                console.log("Error", error.message);
+            }
+            console.log(error.config);
+        });
 }
 
 //Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
