@@ -1,45 +1,33 @@
-// read and set any environment variables w/dotenv package
-//import dotenv package
-//.config() reads .env file, parse the contents, assign it to process.env, 
-//and return an Object with a parsed key containing the loaded content 
-//or an error key if it failed.
-var dotenv = require("dotenv").config();
+//import npm axios
+var axios = require('axios');
 
-//import the keys.js file
-var keys = require("./keys.js");
+//import fs node package
+var fs = require('fs');
+
+// dotenv npm reads & sets any environment variables 
+// import dotenv package
+// .config() reads .env file, parses the contents, assigns it to process.env, 
+// and return an Object with a parsed key containing the loaded content 
+// or an error key if it failed.
+var dotenv = require("dotenv").config();
 
 //import node package
 var Spotify = require('node-spotify-api');
 
+//import the keys.js file
+var keys = require("./keys.js");
+
 // access keys.js data
 var spotify = new Spotify(keys.spotify);
 
-var axios = require('axios');
-
+if (process.argv.length < 1) {
+    console.log("NOt enough agruements entered.")
+}
 //declare variable & set value to the 3rd arguement passed in cmd line
 var action = process.argv[2];
 var searchWord = process.argv[3];
 
-//Make it so liri.js can take in one of the following commands:
-switch (action) {
-    case 'concert-this':
-        console.log('call Bands in Town Artist Events API');
-        concert();
-        break;
-    case 'spotify-this-song':
-        // console.log('call Spotify API ');
-        song();
-        break;
-    case 'movie-this':
-        movie();
-        break;
-    case 'do-what-it-says':
-        console.log('call');
-        // doWhatItSays();
-        break;
-
-}
-//
+//function uses axios get method to access data from Bands in Town API
 function concert() {
 
     var artist = searchWord;
@@ -48,18 +36,22 @@ function concert() {
 
     axios.get(url).then(
             function(response) {
-                // console.log(response.data);
+
+                var name = response.data[0].lineup[0];
                 var venue = response.data[0].venue.name;
-                // console.log('Name of the venue ' + venue);
-                var location = "";
-                console.log(response.data[0].venue.city + ', ' + response.data[0].venue.region);
-                // console.log('Venue location: ' + location);
+                var city = response.data[0].venue.city;
+                var state = response.data[0].venue.region;
+                var location = city + ', ' + state;
+                var date = response.data[0].datetime;
+
+                console.log('\nBand/Artist: ' + name +
+                    '\nVenue: ' + venue +
+                    '\nLocation: ' + location +
+                    '\nDate of the Event: ' + date);
 
                 //use moment to format this as "MM/DD/YYYY"
                 // console.log(response.data[0].datetime);
 
-                var date = response.data[0].datetime;
-                console.log('Date of the Event: ' + date);
             })
         .catch(function(err) {
             console.log('error')
@@ -74,16 +66,14 @@ function song() {
         }
 
         var artist = data.tracks.items[0].artists[0].name;
-        // console.log('Artist(s): ' + artist);
         var album = data.tracks.items[0].album.name;
-        // console.log('Album: ' + album);
         var songUrl = data.tracks.items[0].external_urls.spotify;
-        // console.log('A preview link of the song from Spotify ' + songUrl);
-
         var track = data.tracks.items[0].name;
+
+        console.log('Artist(s): ' + artist);
+        console.log('Album: ' + album);
         console.log("Song name: " + track);
-
-
+        console.log('A preview link of the song from Spotify ' + songUrl);
     });
 }
 
@@ -139,9 +129,56 @@ function movie() {
         });
 }
 
-//Using the fs Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+//Using fs npm, functions reads data from random.txt and then uses it to call one of LIRI's commands.
 //It should run spotify-this-song for "I Want it That Way," as follows the text in random.txt.
 //Edit the text in random.txt to test out the feature for movie-this and concert-this.
 function doWhatItSays() {
 
+
+    fs.readFile("random.txt", "utf8", function(err, data) {
+        if (err) {
+            return console.log(err);
+        }
+        // We will then print the contents of data
+        // console.log('random.txt content: ' + data);
+
+        // Then split it by commas & store in array for easier way to reference
+        var dataArr = data.split(",");
+
+        var command = "node liri.js ";
+
+        // for (var d of dataArr) {
+        for (var i = 0; i < dataArr.length; i++) {
+
+            // console.log(dataArr[i]);
+            var command = command + ' ' + dataArr[i];
+        }
+        console.log(command);
+    });
+
+    //BONUS append console logs to a file
+    // fs.appendFile('log.txt', dataArr, function(err) {
+
+    //     if (err) {
+    //         return console.log(err);
+    //     } else {
+    //         console.log("Succesfully written to log.txt");
+    //     }
+    // });
+}
+
+//passes 1 agruement & excutes code within that case
+switch (action) {
+    case 'concert-this':
+        concert();
+        break;
+    case 'spotify-this-song':
+        song();
+        break;
+    case 'movie-this':
+        movie();
+        break;
+    case 'do-what-it-says':
+        doWhatItSays();
+        break;
 }
