@@ -1,3 +1,6 @@
+//import moment.js
+var moment = require('moment');
+
 //import npm axios
 var axios = require('axios');
 
@@ -20,9 +23,12 @@ var keys = require("./keys.js");
 // access keys.js data
 var spotify = new Spotify(keys.spotify);
 
-if (process.argv.length < 1) {
-    console.log("NOt enough agruements entered.")
+var userinput = process.argv;
+
+if (userinput.length < 3) {
+    return console.log("Not enough agruements entered.")
 }
+
 //declare variable & set value to the 3rd arguement passed in cmd line
 var action = process.argv[2];
 var searchWord = process.argv[3];
@@ -43,22 +49,19 @@ function concert() {
                 var state = response.data[0].venue.region;
                 var location = city + ', ' + state;
                 var date = response.data[0].datetime;
+                date = moment(date).format("MM/DD/YYYY");
 
                 console.log('\nBand/Artist: ' + name +
                     '\nVenue: ' + venue +
                     '\nLocation: ' + location +
                     '\nDate of the Event: ' + date);
-
-                //use moment to format this as "MM/DD/YYYY"
-                // console.log(response.data[0].datetime);
-
             })
         .catch(function(err) {
             console.log('error')
         });
 }
 
-function song() {
+function song(searchWord) {
 
     spotify.search({ type: 'track', query: searchWord, limit: 1 }, function(err, data) {
         if (err) {
@@ -134,37 +137,34 @@ function movie() {
 //Edit the text in random.txt to test out the feature for movie-this and concert-this.
 function doWhatItSays() {
 
-
     fs.readFile("random.txt", "utf8", function(err, data) {
         if (err) {
             return console.log(err);
         }
-        // We will then print the contents of data
-        // console.log('random.txt content: ' + data);
 
         // Then split it by commas & store in array for easier way to reference
         var dataArr = data.split(",");
 
-        var command = "node liri.js ";
-
         // for (var d of dataArr) {
         for (var i = 0; i < dataArr.length; i++) {
 
-            // console.log(dataArr[i]);
-            var command = command + ' ' + dataArr[i];
+            var command = dataArr[i];
         }
-        console.log(command);
+        song(command);
     });
+}
 
-    //BONUS append console logs to a file
-    // fs.appendFile('log.txt', dataArr, function(err) {
+//function appends console.log info to a text file
+function appendToFile(data) {
 
-    //     if (err) {
-    //         return console.log(err);
-    //     } else {
-    //         console.log("Succesfully written to log.txt");
-    //     }
-    // });
+    fs.appendFile('log.txt', data, function(err) {
+
+        if (err) {
+            return console.log(err);
+        } else {
+            console.log("Succesfully written to log.txt");
+        }
+    });
 }
 
 //passes 1 agruement & excutes code within that case
@@ -173,7 +173,7 @@ switch (action) {
         concert();
         break;
     case 'spotify-this-song':
-        song();
+        song(searchWord);
         break;
     case 'movie-this':
         movie();
